@@ -1,12 +1,16 @@
 # Infinite Fusion extensions
 
 This fork is an extension layer for Pokémon Infinite Fusion. Keep local behavior
-in `Data/Scripts/998_ZZZ_Extensions` so upstream updates remain easy to integrate.
+in `Data/Scripts/998_zzz_extensions` so upstream updates remain easy to integrate.
 The user understands Ruby monkey patching, script load order, and the main
 entrypoint; collaborate at that level.
 
 ## Design approach
 
+- Use lowercase `snake_case` for extension directories, filenames, new methods,
+  and local variables; retain numeric load-order prefixes. Use `PascalCase` for
+  classes/modules and `SCREAMING_SNAKE_CASE` for constants. Overrides and calls
+  retain the exact upstream API spelling, including names such as `pbUnfuse`.
 - Build small, focused extensions around upstream behavior. Prefer
   `Module#prepend`, `super`, narrow interception points, and simple callback or
   command registries. Upstream methods remain responsible for their existing work.
@@ -16,16 +20,16 @@ entrypoint; collaborate at that level.
 - Scope temporary overrides to the relevant object or operation, restore state
   with `ensure`, and preserve upstream arguments and return values. Record
   dependencies on particular layouts or method contracts where they matter.
-- Use the existing extensions as examples: `010_Unfusing.rb` wraps one Pokémon's
-  behavior, `002_Menu.rb` provides a command registry, `021_RemoteDayCare.rb`
-  dispatches callbacks around state changes, and `030_SummaryIVs.rb` decorates
+- Use the existing extensions as examples: `010_unfusing.rb` wraps one Pokémon's
+  behavior, `002_menu.rb` provides a command registry, `021_remote_day_care.rb`
+  dispatches callbacks around state changes, and `030_summary_ivs.rb` decorates
   text commands while the original stats page renders.
 - Keep startup and download customizations in this same extension layer.
-  `001_Settings.rb` provides `FREEZE_REMOTE_SETTINGS` as an easy toggle.
+  `001_settings.rb` provides `FREEZE_REMOTE_SETTINGS` as an easy toggle.
 
 ## Workflow and shared context
 
-- The `998_ZZZ_Extensions` name deliberately places extensions after upstream
+- The `998_zzz_extensions` name deliberately places extensions after upstream
   classes and before `999_Main`. The game evaluates these Ruby files at launch;
   extension edits need no build step.
 - Preserve upstream source as the default maintenance strategy. Reusing files
