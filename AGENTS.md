@@ -1,61 +1,48 @@
-# Working on this fork
+# Infinite Fusion extensions
 
-## Purpose
+This fork is an extension layer for Pokémon Infinite Fusion. Keep local behavior
+in `Data/Scripts/998_ZZZ_Extensions` so upstream updates remain easy to integrate.
+The user understands Ruby monkey patching, script load order, and the main
+entrypoint; collaborate at that level.
 
-This fork hosts extensions to Pokémon Infinite Fusion in
-`Data/Scripts/998_ZZZ_Extensions`.
-Keep upstream game files untouched by default so upstream changes can be brought
-in without losing or repeatedly reapplying local modifications.
+## Design approach
 
-## Extension design
+- Build small, focused extensions around upstream behavior. Prefer
+  `Module#prepend`, `super`, narrow interception points, and simple callback or
+  command registries. Upstream methods remain responsible for their existing work.
+- Find a hook that expresses the requested change with minimal duplication.
+  A whole-method replacement is a fallback when narrower hooks cannot preserve
+  the intended behavior; explain that tradeoff when it arises.
+- Scope temporary overrides to the relevant object or operation, restore state
+  with `ensure`, and preserve upstream arguments and return values. Record
+  dependencies on particular layouts or method contracts where they matter.
+- Use the existing extensions as examples: `010_Unfusing.rb` wraps one Pokémon's
+  behavior, `002_Menu.rb` provides a command registry, `021_RemoteDayCare.rb`
+  dispatches callbacks around state changes, and `030_SummaryIVs.rb` decorates
+  text commands while the original stats page renders.
+- Keep startup and download customizations in this same extension layer.
+  `001_Settings.rb` provides `FREEZE_REMOTE_SETTINGS` as an easy toggle.
 
-- Keep custom behavior in small, focused Ruby files in
-  `Data/Scripts/998_ZZZ_Extensions` unless the user requests a different location.
-- The late-loading directory name is intentional: extensions load after the
-  classes they modify and before `999_Main` starts the game.
-- Prefer `Module#prepend`, `super`, targeted method interception, and small
-  extension registries or callbacks. Let upstream code continue doing its work.
-- Find the narrowest useful hook before replacing a method. Copying an entire
-  upstream method into a prepended module still duplicates upstream behavior and
-  creates maintenance work; do not use that as the default approach.
-- Scope temporary behavior to the relevant object or operation. Restore temporary
-  state with `ensure`, including when the wrapped operation raises an exception.
-- Preserve upstream arguments, return values, and behavior outside the intended
-  extension. Document any dependency on a particular upstream layout or contract.
-- Read the existing extensions for patterns: `010_Unfusing.rb` temporarily changes
-  one Pokémon's behavior; `002_Menu.rb` adds an extensible menu registry;
-  `021_RemoteDayCare.rb` wraps state changes and dispatches custom callbacks;
-  `030_SummaryIVs.rb` intercepts drawing commands around the original stats page.
-- Apply the same approach to changes in startup or download behavior: implement
-  a localized extension rather than editing upstream startup scripts.
+## Workflow and shared context
 
-## Communication and context
+- The `998_ZZZ_Extensions` name deliberately places extensions after upstream
+  classes and before `999_Main`. The game evaluates these Ruby files at launch;
+  extension edits need no build step.
+- Preserve upstream source as the default maintenance strategy. Reusing files
+  from the previous install means bringing over relevant assets/data while
+  retaining this fork's source and extensions.
+- In the setup discussion, "freeze the version check" meant freezing the startup
+  settings download. Version announcements, Pokédex downloads, and sprite
+  downloads are distinct behaviors; use the requested scope in each task.
+- Evaluate working-tree changes with the game's runtime in mind: downloaded
+  settings, caches, generated icons, and line-ending/index differences can all
+  appear alongside source changes. Many assets are tracked; use the actual ignore
+  rules to determine which are excluded.
+- Use the previous installation as a reference and asset source. Preserve its
+  contents while developing here unless changes there are explicitly requested.
+- Choose validation that answers the relevant question. Distinguish source-level
+  checks from execution in the game, and communicate limitations when they affect
+  confidence in the result.
 
-- Treat the user as familiar with this game's script ordering, main entrypoint,
-  and monkey-patching techniques. Explain relevant discoveries and tradeoffs
-  without repeatedly teaching fundamentals they have already demonstrated.
-- Interpret shorthand using the established task and architecture. In the setup
-  discussion, copying files from the previous install meant reusing assets/data
-  while retaining the extension-based source here, not blindly copying the whole
-  install over the fork.
-- In that same discussion, disabling the "new version check" meant stopping the
-  startup download of new settings, not merely hiding the update announcement.
-  Keep that context without assuming all future network-related requests mean
-  disabling every download.
-- Carry established intent forward. Clarify when a distinction materially affects
-  the requested action and cannot reasonably be resolved from context.
-
-## Preservation and Git
-
-- Preserve user-authored work, including staged changes. Do not stage, unstage,
-  commit, reset, or otherwise alter Git state on your own initiative.
-- Follow the user's global operating constitution. Explicit requests authorize
-  the particular Git action requested; they are not blanket authorization for
-  other Git mutations. Do not repeatedly ask the user to authorize an action they
-  have already explicitly requested, apart from required tool permissions.
-- Ask before destructive or difficult-to-recover actions. Keep the previous game
-  installation intact unless the user explicitly requests changes there.
-- Distinguish source changes from downloaded settings, caches, generated icons,
-  and line-ending/index noise when reviewing a working tree.
-- Report validation accurately: source inspection and diff checks are not an
-  in-game test. Ruby extension edits do not require rebuilding the game.
+Apply the global collaboration and Git authorization preferences here. Keep
+project guidance focused on durable architecture and useful working context.
