@@ -1,3 +1,8 @@
+> [!CAUTION]
+> This is a personal fork of Pokémon Infinite Fusion with custom extensions in
+> [`Data/Scripts/998_ZZZ_Extensions`](Data/Scripts/998_ZZZ_Extensions).
+> I don't recommend downloading this fork to play the game. Please use the official release instead.
+
 ## Thank you for downloading Pokémon Infinite Fusion!
 
 Playing the game

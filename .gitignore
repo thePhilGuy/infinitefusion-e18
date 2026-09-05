@@ -1,8 +1,3 @@
-Graphics/CustomBattlers/local_sprites/*
-Graphics/Battlers/Shiny/*
-
-Graphics/CustomBattlers/spritesheets/*
-Graphics/CustomBattlers/*
 Data/VERSION
 infinitefusion.sh
 .gitignore
@@ -10,3 +5,17 @@ Game.rxproj
 .DS_Store
 PBS/*
 rpgmaker.sh
+
+# Loose files at the Graphics root; subdirectories use the rules below.
+/Graphics/*
+!/Graphics/*/
+
+# Downloaded, generated, and bundled extra assets.
+# Tracked assets in these directories still report changes normally.
+/Graphics/CustomBattlers/
+/Graphics/Battlers/Shiny/
+/Graphics/Pokemon/FusionIcons/
+/Graphics/Autotiles/
+/Graphics/Tilesets/
+/Graphics/Titles/
+/Graphics/Characters/player/clothes/
